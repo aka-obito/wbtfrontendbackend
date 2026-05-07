@@ -118,76 +118,79 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const mydb = mysql2.createConnection({
+const mydb = {
     host: "localhost",
     port: 3306,
     user: "root",
     password: "Pass@123",
     database: "iacsd"
-});
+};
 
-// ✅ connect ONLY ONCE
-mydb.connect((err) => {
-    if (err) {
-        console.log("DB connection failed");
-    } else {
-        console.log("DB connected");
-    }
-});
 
 // GET
 app.get("/employee", (request, response) => {
 
+    const connection = mysql2.createConnection(mydb);
+
     var querytxt = "select * from emp";
 
-    mydb.query(querytxt, (err, result) => {
+    connection.query(querytxt, (err, result) => {
         if (err == null) {
             response.json(result);
         } else {
             response.json(err);
         }
+        connection.end();
     });
 });
 
 // POST
 app.post("/employee", (request, response) => {
 
+    const connection = mysql2.createConnection(mydb);
+
     var querytxt = \`insert into emp(name,address) VALUES('\${request.body.name}','\${request.body.address}')\`;
 
-    mydb.query(querytxt, (err, result) => {
+    connection.query(querytxt, (err, result) => {
         if (err == null) {
             response.json(result);
         } else {
             response.json(err);
         }
+        connection.end();
     });
 });
 
 // PUT
 app.put("/employee/:no", (request, response) => {
 
+    const connection = mysql2.createConnection(mydb);
+
     var querytxt = \`update emp set name='\${request.body.name}', address='\${request.body.address}' where no=\${request.params.no}\`;
 
-    mydb.query(querytxt, (err, result) => {
+    connection.query(querytxt, (err, result) => {
         if (err == null) {
             response.json(result);
         } else {
             response.json(err);
         }
+        connection.end();
     });
 });
 
 // DELETE
 app.delete("/employee/:no", (request, response) => {
 
+    const connection = mysql2.createConnection(mydb);
     var querytxt = \`delete from emp where no=\${request.params.no}\`;
 
-    mydb.query(querytxt, (err, result) => {
+    connection.query(querytxt, (err, result) => {
         if (err == null) {
             response.json(result);
         } else {
             response.json(err);
         }
+        connection.end();
     });
 });
 
