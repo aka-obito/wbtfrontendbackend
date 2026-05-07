@@ -109,8 +109,8 @@ export default Dashboard;
 
   // BACKEND CODE
   const backendCode = `
+const mysql2 = require("mysql2");
 const express = require("express");
-const mysql = require("mysql2");
 const cors = require("cors");
 
 const app = express();
@@ -118,99 +118,81 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/employees", (request, response) => {
-
-  const connection = mysql.createConnection({
+const mydb = mysql2.createConnection({
     host: "localhost",
-    port: "3306",
+    port: 3306,
     user: "root",
     password: "Pass@123",
-    database: "iacsd",
-  });
-
-  connection.connect();
-
-  var querytext = "select * from employees";
-
-  connection.query(querytext, (err, result) => {
-
-    response.setHeader("content-type", "application/json");
-
-    if (err == null) {
-      response.send(JSON.stringify(result));
-    } else {
-      response.send(JSON.stringify(err));
-    }
-
-    connection.end();
-  });
+    database: "iacsd"
 });
 
-app.post("/employees", (request, response) => {
-
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: "3306",
-    user: "root",
-    password: "Pass@123",
-    database: "iacsd",
-  });
-
-  connection.connect();
-
-  var querytext =
-    \`INSERT INTO employees(name,address)
-     VALUES('\${request.body.name}',
-     '\${request.body.address}')\`;
-
-  connection.query(querytext, (err, result) => {
-
-    response.setHeader("content-type", "application/json");
-
-    if (err == null) {
-      response.send(JSON.stringify(result));
+// ✅ connect ONLY ONCE
+mydb.connect((err) => {
+    if (err) {
+        console.log("DB connection failed");
     } else {
-      response.send(JSON.stringify(err));
+        console.log("DB connected");
     }
-
-    connection.end();
-  });
 });
 
-app.put("/employees/:no", (request, response) => {
+// GET
+app.get("/employee", (request, response) => {
 
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: "3306",
-    user: "root",
-    password: "Pass@123",
-    database: "iacsd",
-  });
+    var querytxt = "select * from emp";
 
-  connection.connect();
+    mydb.query(querytxt, (err, result) => {
+        if (err == null) {
+            response.json(result);
+        } else {
+            response.json(err);
+        }
+    });
+});
 
-  var querytext =
-    \`update employees
-     set name = '\${request.body.name}',
-     address = '\${request.body.address}'
-     where no = '\${request.params.no}'\`;
+// POST
+app.post("/employee", (request, response) => {
 
-  connection.query(querytext, (err, result) => {
+    var querytxt = \`insert into emp(name,address) VALUES('\${request.body.name}','\${request.body.address}')\`;
 
-    response.setHeader("content-type", "application/json");
+    mydb.query(querytxt, (err, result) => {
+        if (err == null) {
+            response.json(result);
+        } else {
+            response.json(err);
+        }
+    });
+});
 
-    if (err == null) {
-      response.send(JSON.stringify(result));
-    } else {
-      response.send(JSON.stringify(err));
-    }
+// PUT
+app.put("/employee/:no", (request, response) => {
 
-    connection.end();
-  });
+    var querytxt = \`update emp set name='\${request.body.name}', address='\${request.body.address}' where no=\${request.params.no}\`;
+
+    mydb.query(querytxt, (err, result) => {
+        if (err == null) {
+            response.json(result);
+        } else {
+            response.json(err);
+        }
+    });
+});
+
+// DELETE
+app.delete("/employee/:no", (request, response) => {
+
+    var querytxt = \`delete from emp where no=\${request.params.no}\`;
+
+    mydb.query(querytxt, (err, result) => {
+        if (err == null) {
+            response.json(result);
+        } else {
+            response.json(err);
+        }
+    });
 });
 
 app.listen(9999, () => {
-  console.log("Server Started");
+    console.log("Fahhhhhhhhh");
 });
 `;
 
