@@ -46,7 +46,7 @@ function Dashboard() {
   };
 
   const UpdateRecord = () => {
-    axios.put(`${url}/${emp.no}`, emp).then((result) => {
+    axios.put(\`\${url}/\${emp.no}\`, emp).then((result) => {
       if (result.data.affectedRows > 0) {
         alert("Record Updated Successfully");
 
@@ -60,7 +60,7 @@ function Dashboard() {
   };
 
   const remove = (id) => {
-    axios.delete(`${url}/${id}`).then((result) => {
+    axios.delete(\`\${url}/\${id}\`).then((result) => {
       if (result.data.affectedRows > 0) {
         alert("Record Deleted");
         getData();
@@ -155,7 +155,6 @@ function Dashboard() {
     </>
   );
 }
-
 export default Dashboard;
 
 `;
