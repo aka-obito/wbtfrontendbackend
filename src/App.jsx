@@ -12,7 +12,7 @@ function Dashboard() {
   const [emps, setEmps] = useState([]);
   const [emp, setEmp] = useState({ no: 0, name: "", address: "" });
 
-  var url = "http://127.0.0.1:9999/employees";
+  var url = "http://localhost:9999/employee";
 
   const getData = () => {
     axios.get(url).then((result) => {
@@ -41,6 +41,35 @@ function Dashboard() {
     });
   };
 
+  const edit = (e) => {
+    setEmp(e);
+  };
+
+  const UpdateRecord = () => {
+    axios.put(`${url}/${emp.no}`, emp).then((result) => {
+      if (result.data.affectedRows > 0) {
+        alert("Record Updated Successfully");
+
+        setEmp({ no: 0, name: "", address: "" });
+
+        getData();
+      } else {
+        alert("Update Failed");
+      }
+    });
+  };
+
+  const remove = (id) => {
+    axios.delete(`${url}/${id}`).then((result) => {
+      if (result.data.affectedRows > 0) {
+        alert("Record Deleted");
+        getData();
+      } else {
+        alert("Delete Failed");
+      }
+    });
+  };
+
   return (
     <>
       <center>
@@ -48,7 +77,6 @@ function Dashboard() {
       </center>
 
       <div className="container">
-
         <label>Name</label>
         <input
           className="form-control"
@@ -71,7 +99,15 @@ function Dashboard() {
 
         <hr />
 
-        <button onClick={AddRecord}>Add Record</button>
+        <div>
+          <button className="btn btn-primary me-2" onClick={AddRecord}>
+            Add Record
+          </button>
+
+          <button className="btn btn-success" onClick={UpdateRecord}>
+            Update Record
+          </button>
+        </div>
 
         <hr />
 
@@ -82,6 +118,7 @@ function Dashboard() {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Address</th>
+                <th>Actions</th>
               </tr>
             </thead>
 
@@ -92,11 +129,26 @@ function Dashboard() {
                     <td>{e.no}</td>
                     <td>{e.name}</td>
                     <td>{e.address}</td>
+
+                    <td>
+                      <button
+                        className="btn btn-warning me-2"
+                        onClick={() => edit(e)}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => remove(e.no)}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
-
           </table>
         </div>
       </div>
@@ -105,6 +157,7 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
 `;
 
   // BACKEND CODE
