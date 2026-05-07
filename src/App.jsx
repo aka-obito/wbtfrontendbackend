@@ -131,6 +131,7 @@ const mydb = {
 app.get("/employee", (request, response) => {
 
     const connection = mysql2.createConnection(mydb);
+    connection.connect();
 
     var querytxt = "select * from emp";
 
@@ -148,6 +149,7 @@ app.get("/employee", (request, response) => {
 app.post("/employee", (request, response) => {
 
     const connection = mysql2.createConnection(mydb);
+    connection.connect();
 
     var querytxt = \`insert into emp(name,address) VALUES('\${request.body.name}','\${request.body.address}')\`;
 
@@ -165,6 +167,7 @@ app.post("/employee", (request, response) => {
 app.put("/employee/:no", (request, response) => {
 
     const connection = mysql2.createConnection(mydb);
+    connection.connect();
 
     var querytxt = \`update emp set name='\${request.body.name}', address='\${request.body.address}' where no=\${request.params.no}\`;
 
@@ -182,6 +185,7 @@ app.put("/employee/:no", (request, response) => {
 app.delete("/employee/:no", (request, response) => {
 
     const connection = mysql2.createConnection(mydb);
+    connection.connect();
     var querytxt = \`delete from emp where no=\${request.params.no}\`;
 
     connection.query(querytxt, (err, result) => {
