@@ -2,257 +2,259 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
 
-  // FRONTEND CODE
-  const frontendCode = `
-import { useEffect, useState } from "react";
-import axios from "axios";
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+// FRONTEND CODE
+const frontendCode = `
+<html>
+    <head>
+        <title>Demo</title>
+        <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    </head>
 
-function Dashboard() {
-  const [emps, setEmps] = useState([]);
-  const [emp, setEmp] = useState({ no: 0, name: "", address: "" });
-
-  var url = "http://localhost:9999/employee";
-
-  const getData = () => {
-    axios.get(url).then((result) => {
-      setEmps(result.data);
-    });
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const onTextChange = (args) => {
-    var CpyEmp = { ...emp };
-    CpyEmp[args.target.name] = args.target.value;
-    setEmp(CpyEmp);
-  };
-
-  const AddRecord = () => {
-    axios.post(url, emp).then((result) => {
-      if (result.data.affectedRows > 0) {
-        setEmp({ no: 0, name: "", address: "" });
-        getData();
-      } else {
-        alert("Something Wrong!");
-      }
-    });
-  };
-
-  const edit = (e) => {
-    setEmp(e);
-  };
-
-  const UpdateRecord = () => {
-    axios.put(\`\${url}/\${emp.no}\`, emp).then((result) => {
-      if (result.data.affectedRows > 0) {
-        alert("Record Updated Successfully");
-
-        setEmp({ no: 0, name: "", address: "" });
-
-        getData();
-      } else {
-        alert("Update Failed");
-      }
-    });
-  };
-
-  const remove = (id) => {
-    axios.delete(\`\${url}/\${id}\`).then((result) => {
-      if (result.data.affectedRows > 0) {
-        alert("Record Deleted");
-        getData();
-      } else {
-        alert("Delete Failed");
-      }
-    });
-  };
-
-  return (
-    <>
-      <center>
-        <h1>Crud Operations</h1>
-      </center>
-
-      <div className="container">
-        <label>Name</label>
-        <input
-          className="form-control"
-          type="text"
-          value={emp.name}
-          name="name"
-          onChange={onTextChange}
-        />
+    <body class="container">
 
         <hr />
-
-        <label>Address</label>
-        <input
-          className="form-control"
-          type="text"
-          value={emp.address}
-          name="address"
-          onChange={onTextChange}
-        />
-
+        <a href="/Home/Create" class="btn btn-primary">Create New Record</a>
         <hr />
 
-        <div>
-          <button className="btn btn-primary me-2" onClick={AddRecord}>
-            Add Record
-          </button>
+        <hr />
+        <a href="/Home/Sort" class="btn btn-primary">Sort</a>
+        <hr />
 
-          <button className="btn btn-success" onClick={UpdateRecord}>
-            Update Record
-          </button>
+        <hr />
+        <a href="/Home/Login" class="btn btn-primary">Login</a>
+        <hr />
+
+        <hr/>
+        <div class="col-md-7">
+            <form action="/Home/Search" method="get" class="d-flex">
+
+                <input
+                    type="text"
+                    name="searchAddress"
+                    class="form-control me-2"
+                    placeholder="Search by address..."
+                    required
+                />
+
+                <button type="submit" class="btn btn-success">
+                    Search
+                </button>
+
+                <a href="/Home/Index" class="btn btn-outline-secondary ms-2">
+                    Clear
+                </a>
+
+            </form>
         </div>
 
         <hr />
 
-        <div className="table table-responsive">
-          <table className="table table-bordered text-center">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+        <div class="table-responsive">
 
-            <tbody>
-              {emps.map((e) => {
-                return (
-                  <tr key={e.no}>
-                    <td>{e.no}</td>
-                    <td>{e.name}</td>
-                    <td>{e.address}</td>
+            <table class="table table-bordered text-center">
 
-                    <td>
-                      <button
-                        className="btn btn-warning me-2"
-                        onClick={() => edit(e)}
-                      >
-                        Edit
-                      </button>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
 
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => remove(e.no)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>@item.No</td>
+
+                            <td>@item.Name</td>
+
+                            <td>@item.Address</td>
+
+                            <td>
+                                <a
+                                    class="btn btn-warning"
+                                    href="/Home/Edit/@item.No">
+                                    Edit
+                                </a>
+                            </td>
+
+                            <td>
+                                <a
+                                    class="btn btn-danger"
+                                    href="/Home/Delete/@item.No">
+                                    Delete
+                                </a>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
         </div>
-      </div>
-    </>
-  );
-}
-export default Dashboard;
 
+    </body>
+
+</html>
 `;
 
-  // BACKEND CODE
+//backend code
   const backendCode = `
-const mysql2 = require("mysql2");
-const express = require("express");
-const cors = require("cors");
+using crudpratice.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Numerics;
 
-const app = express();
+namespace _Crudops.Controllers
+{
 
-app.use(cors());
-app.use(express.json());
+    public class HomeController : Controller
+    {
+        private readonly NewdbContext db = new NewdbContext();
 
-const mydb = {
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "Pass@123",
-    database: "iacsd"
-};
+        #region 1. READ (Index)
 
-
-// GET
-app.get("/employee", (request, response) => {
-
-    const connection = mysql2.createConnection(mydb);
-    connection.connect();
-
-    var querytxt = "select * from emp";
-
-    connection.query(querytxt, (err, result) => {
-        if (err == null) {
-            response.json(result);
-        } else {
-            response.json(err);
+        public IActionResult Index()
+        {
+            return View("Index", db.Emps.ToList());
         }
-        connection.end();
-    });
-});
 
-// POST
-app.post("/employee", (request, response) => {
+        #endregion
 
-    const connection = mysql2.createConnection(mydb);
-    connection.connect();
+        #region 2. CREATE
 
-    var querytxt = \`insert into emp(name,address) VALUES('\${request.body.name}','\${request.body.address}')\`;
-
-    connection.query(querytxt, (err, result) => {
-        if (err == null) {
-            response.json(result);
-        } else {
-            response.json(err);
+        public IActionResult Create()
+        {
+            return View();
         }
-        connection.end();
-    });
-});
 
-// PUT
-app.put("/employee/:no", (request, response) => {
+        public IActionResult AfterCreate(Emp emp)
+        {
+            db.Emps.Add(emp);
+            db.SaveChanges();
 
-    const connection = mysql2.createConnection(mydb);
-    connection.connect();
-
-    var querytxt = \`update emp set name='\${request.body.name}', address='\${request.body.address}' where no=\${request.params.no}\`;
-
-    connection.query(querytxt, (err, result) => {
-        if (err == null) {
-            response.json(result);
-        } else {
-            response.json(err);
+            return RedirectToAction("Index");
         }
-        connection.end();
-    });
-});
 
-// DELETE
-app.delete("/employee/:no", (request, response) => {
+        #endregion
 
-    const connection = mysql2.createConnection(mydb);
-    connection.connect();
-    var querytxt = \`delete from emp where no=\${request.params.no}\`;
+        #region 3. EDIT
 
-    connection.query(querytxt, (err, result) => {
-        if (err == null) {
-            response.json(result);
-        } else {
-            response.json(err);
+        public IActionResult Edit(int? id)
+        {
+            Emp? empToBeEdited = db.Emps.Find(id);
+
+            if (empToBeEdited == null)
+            {
+                return NotFound();
+            }
+
+            return View("Edit", empToBeEdited);
         }
-        connection.end();
-    });
-});
 
-app.listen(9999, () => {
-    console.log("Fahhhhhhhhh");
-});
+        public IActionResult AfterEdit(Emp empUpdated)
+        {
+            Emp? empFromEFCollectionToChange =
+                db.Emps.Find(empUpdated.No);
+
+            if (empFromEFCollectionToChange == null)
+            {
+                return NotFound();
+            }
+
+            empFromEFCollectionToChange.Name = empUpdated.Name;
+            empFromEFCollectionToChange.Address = empUpdated.Address;
+
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
+        #region 4. DELETE
+
+        public IActionResult Delete(int? id)
+        {
+            Emp? empToBeDeleted = db.Emps.Find(id);
+
+            if (empToBeDeleted == null)
+            {
+                return NotFound();
+            }
+
+            db.Emps.Remove(empToBeDeleted);
+
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
+        #region 5. SORT
+
+        public IActionResult Sort()
+        {
+            var emp = db.Emps
+                        .OrderBy(x => x.Name)
+                        .ToList();
+
+            return View("Index", emp);
+        }
+
+        #endregion
+
+        #region 6. SEARCH
+
+        public IActionResult Search(string searchAddress)
+        {
+            var emp = db.Emps
+                        .Where(x =>
+                            x.Address != null &&
+                            x.Address.Contains(searchAddress))
+                        .ToList();
+
+            return View("Index", emp);
+        }
+
+        #endregion
+
+        #region 7. LOGIN
+
+        public IActionResult Login()
+        {
+            return View("Login");
+        }
+
+        public IActionResult AfterLogin(string name, int no)
+        {
+            Emp emp = db.Emps.FirstOrDefault(i =>
+                        i.Name == name &&
+                        i.No == no);
+
+            if (emp != null)
+            {
+                return View("Edit", emp);
+            }
+
+            ViewBag.msg = "Invalid Name or Employee Number";
+
+            return View("Login");
+        }
+
+        #endregion
+    }
+}
 `;
 
   return (
