@@ -108,7 +108,7 @@ const frontendCode = `
 `;
 
 //backend code
-  const backendCode = `
+const backendCode = `
 using crudpratice.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -151,29 +151,12 @@ namespace _Crudops.Controllers
 
         public IActionResult Edit(int? id)
         {
-            Emp? empToBeEdited = db.Emps.Find(id);
-
-            if (empToBeEdited == null)
-            {
-                return NotFound();
-            }
-
-            return View("Edit", empToBeEdited);
+            return View("Edit", db.Emps.Find(id));
         }
 
-        public IActionResult AfterEdit(Emp empUpdated)
+        public IActionResult AfterEdit(Emp emp)
         {
-            Emp? empFromEFCollectionToChange =
-                db.Emps.Find(empUpdated.No);
-
-            if (empFromEFCollectionToChange == null)
-            {
-                return NotFound();
-            }
-
-            empFromEFCollectionToChange.Name = empUpdated.Name;
-            empFromEFCollectionToChange.Address = empUpdated.Address;
-
+            db.Emps.Update(emp);
             db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -185,15 +168,9 @@ namespace _Crudops.Controllers
 
         public IActionResult Delete(int? id)
         {
-            Emp? empToBeDeleted = db.Emps.Find(id);
+            Emp? emp = db.Emps.Find(id);
 
-            if (empToBeDeleted == null)
-            {
-                return NotFound();
-            }
-
-            db.Emps.Remove(empToBeDeleted);
-
+            db.Emps.Remove(emp);
             db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -247,7 +224,7 @@ namespace _Crudops.Controllers
                 return View("Edit", emp);
             }
 
-            ViewBag.msg = "Invalid Name or Employee Number";
+            ViewBag.msg = "Invalid login";
 
             return View("Login");
         }
